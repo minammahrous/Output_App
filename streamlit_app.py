@@ -5,11 +5,13 @@ import csv
 
 st.title("Shift Output Report")
 
-# Initialize session state for submitted data
+# Initialize session state for submitted data and modify mode
 if "submitted_archive_df" not in st.session_state:
     st.session_state.submitted_archive_df = pd.DataFrame()
 if "submitted_av_df" not in st.session_state:
     st.session_state.submitted_av_df = pd.DataFrame()
+if "modify_mode" not in st.session_state:
+    st.session_state.modify_mode = False
 
 # Read machine list from CSV
 machine_list = []
@@ -245,9 +247,20 @@ if st.session_state.product_batches[selected_product]:
             st.subheader("Submitted AV Data")
             st.dataframe(st.session_state.submitted_av_df)
 
-            # Allow user to modify submitted data
-            if st.button("Modify Data"):
-                st.session_state.modify_mode = True
+            # Provide two options: Approve and Save or Modify Data
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("Approve and Save"):
+                    try:
+                        # Save data to CSV files
+                        st.session_state.submitted_archive_df.to_csv("archive.csv", index=False)
+                        st.session_state.submitted_av_df.to_csv("av.csv", index=False)
+                        st.success("Data saved successfully!")
+                    except Exception as e:
+                        st.error(f"Error saving data: {e}")
+            with col2:
+                if st.button("Modify Data"):
+                    st.session_state.modify_mode = True
 
 # Modify mode
 if st.session_state.get("modify_mode", False):
@@ -255,7 +268,7 @@ if st.session_state.get("modify_mode", False):
     modified_archive_df = st.data_editor(st.session_state.submitted_archive_df, key="archive_editor")
     modified_av_df = st.data_editor(st.session_state.submitted_av_df, key="av_editor")
 
-    if st.button("Save Modifications"):
+    if st.button("Confirm Modifications and Save"):
         try:
             # Save modified data to CSV files
             modified_archive_df.to_csv("archive.csv", index=False)
