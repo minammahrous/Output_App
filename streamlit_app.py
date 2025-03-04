@@ -253,16 +253,24 @@ if st.session_state.product_batches[selected_product]:
             with col1:
                 if st.button("Approve and Save"):
                     try:
+                        # Debugging: Print current working directory
+                        print("Current Working Directory:", os.getcwd())
+        
                         # Debugging: Print data frames to check their content
                         print(st.session_state.submitted_archive_df)
                         print(st.session_state.submitted_av_df)
         
+                        # Use full file paths
+                        archive_file_path = os.path.join(os.getcwd(), "archive.csv")
+                        av_file_path = os.path.join(os.getcwd(), "av.csv")
+        
                         # Save data to CSV files
-                        st.session_state.submitted_archive_df.to_csv("archive.csv", index=False)
-                        st.session_state.submitted_av_df.to_csv("av.csv", index=False)
+                        st.session_state.submitted_archive_df.to_csv(archive_file_path, index=False)
+                        st.session_state.submitted_av_df.to_csv(av_file_path, index=False)
+        
                         st.success("Data saved successfully!")
-                    except Exception as e:
-                        st.error(f"Error saving data: {e}")
+                except Exception as e:
+                    st.error(f"Error saving data: {e}")
             with col2:
                 if st.button("Modify Data"):
                     st.session_state.modify_mode = True
