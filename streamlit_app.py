@@ -256,9 +256,9 @@ if st.session_state.product_batches[selected_product]:
                     except Exception as e:
                         st.error(f"Error archiving data: {e}")
 
-        elif review_choice == "Modify":
-            modified_archive_df = st.data_editor(archive_df)
-            modified_av_df = st.data_editor(av_df)
+                    elif review_choice == "Modify":
+                        modified_archive_df = st.data_editor(archive_df)
+                        modified_av_df = st.data_editor(av_df)
     if st.button("Done Modifying"):
         try:
             # Overwrite the entire csv files with the modified dataframes.
