@@ -243,8 +243,8 @@ if st.session_state.product_batches[selected_product]:
                     import os # Import the os library.
                     archive_exists = os.path.isfile("archive.csv")
                     av_exists = os.path.isfile("av.csv")
-                    archive_df.to_csv("archive.csv", mode='a', header=not archive_exists, index=False)
-                    av_df.to_csv("av.csv", mode='a', header=not av_exists, index=False)
+                    archive_df.to_csv("archive.csv", mode='a', index=False)
+                    av_df.to_csv("av.csv", mode='a', index=False)
                     st.success("Data archived successfully.")
             elif review_choice == "Modify":
                 modified_archive_df = st.data_editor(archive_df)
