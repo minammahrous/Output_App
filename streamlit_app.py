@@ -2,7 +2,7 @@ import streamlit as st
 import datetime
 import pandas as pd
 import csv
-import OS
+import os
 
 st.title("Shift Output Report")
 
