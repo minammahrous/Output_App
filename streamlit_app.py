@@ -252,6 +252,10 @@ if st.session_state.product_batches[selected_product]:
             with col1:
                 if st.button("Approve and Save"):
                     try:
+                        # Debugging: Print data frames to check their content
+                        print(st.session_state.submitted_archive_df)
+                        print(st.session_state.submitted_av_df)
+        
                         # Save data to CSV files
                         st.session_state.submitted_archive_df.to_csv("archive.csv", index=False)
                         st.session_state.submitted_av_df.to_csv("av.csv", index=False)
