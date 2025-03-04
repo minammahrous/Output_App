@@ -5,6 +5,12 @@ import csv
 
 st.title("Shift Output Report")
 
+# Initialize session state for submitted data
+if "submitted_archive_df" not in st.session_state:
+    st.session_state.submitted_archive_df = pd.DataFrame()
+if "submitted_av_df" not in st.session_state:
+    st.session_state.submitted_av_df = pd.DataFrame()
+
 # Read machine list from CSV
 machine_list = []
 try:
@@ -38,7 +44,6 @@ else:
         shifts_df = pd.read_csv("shifts.csv")
         shift_durations = shifts_df["code"].tolist()
         shift_working_hours = shifts_df["working hours"].tolist()
-
     except FileNotFoundError:
         st.error("shifts.csv file not found. Please create the file.")
         shift_durations = []
@@ -58,7 +63,7 @@ else:
         default_date = now.date()
 
     date = st.date_input("Date", default_date)
-    shift_types = ["Day", "Night", "Plan"] #updated shift types.
+    shift_types = ["Day", "Night", "Plan"]  # updated shift types.
     shift_type = st.selectbox("Shift Type", shift_types)
     shift_duration = st.selectbox("Shift Duration", shift_durations)
 
@@ -89,7 +94,7 @@ else:
 
     with st.form("batch_entry_form"):
         batch = st.text_input("Batch Number")
-        quantity = st.number_input("Production Quantity", min_value=0.0, step=0.1, format="%.1f") # quantity is now a float.
+        quantity = st.number_input("Production Quantity", min_value=0.0, step=0.1, format="%.1f")  # quantity is now a float.
         time_consumed = st.number_input("Time Consumed (hours)", min_value=0.0, step=0.1, format="%.1f")
         add_batch = st.form_submit_button("Add Batch")
 
@@ -118,18 +123,19 @@ if st.session_state.product_batches[selected_product]:
         cols[3].write("Delete")
 
         # Data rows and delete buttons
-        batches_to_delete = [] # create a list to store indexes to delete
+        batches_to_delete = []  # create a list to store indexes to delete
         for i, batch in enumerate(batch_data):
             cols[0].write(batch["batch"])
             cols[1].write(batch["quantity"])
             cols[2].write(batch["time_consumed"])
             if cols[3].button("Delete", key=f"delete_{selected_product}_{i}"):
-                batches_to_delete.append(i) # add index to delete list
+                batches_to_delete.append(i)  # add index to delete list
 
         # Delete the batches after the loop, in reverse order to avoid index issues.
         for i in sorted(batches_to_delete, reverse=True):
             del st.session_state.product_batches[selected_product][i]
-            st.rerun() # refresh after any deletion.
+            st.rerun()  # refresh after any deletion.
+
     if st.button("Submit Report"):
         # Validation: Check if comments are provided for downtime entries
         missing_comments = [dt_type for dt_type in downtime_types if downtime_data[dt_type] > 0 and not downtime_data[dt_type + "_comment"]]
@@ -167,6 +173,7 @@ if st.session_state.product_batches[selected_product]:
                     }
                     archive_data.append(archive_row)
             archive_df = pd.DataFrame(archive_data)
+
             # Construct archive_df (Production batch records)
             try:
                 rates_df = pd.read_csv("rates.csv")
@@ -198,6 +205,7 @@ if st.session_state.product_batches[selected_product]:
                     archive_df = pd.concat([archive_df, pd.DataFrame([archive_row])], ignore_index=True)
             except FileNotFoundError:
                 st.error("rates.csv was not found")
+
             # Construct av_df
             try:
                 total_production_time = sum([batch["time_consumed"] for batch in st.session_state.product_batches[selected_product]])
@@ -227,46 +235,32 @@ if st.session_state.product_batches[selected_product]:
             except FileNotFoundError:
                 st.error("shifts.csv or rates.csv was not found")
 
-            # Display archive_df and av_df
-            st.subheader("Archive Data")
-            st.dataframe(archive_df)
-            st.subheader("AV Data")
-            st.dataframe(av_df)
+            # Store submitted data in session state
+            st.session_state.submitted_archive_df = archive_df
+            st.session_state.submitted_av_df = av_df
 
-            # Review and action buttons
-            review_choice = st.radio("Review and Action", ["Archive", "Modify"])
-            if review_choice == "Archive":
-                if st.button("Confirm Archive"):
-                    try:
-                        st.write(archive_df)  # added
-                        st.write(av_df)  # added
+            # Display submitted data
+            st.subheader("Submitted Archive Data")
+            st.dataframe(st.session_state.submitted_archive_df)
+            st.subheader("Submitted AV Data")
+            st.dataframe(st.session_state.submitted_av_df)
 
-                        # Append av_df to archive_df
-                        archive_df = pd.concat([archive_df, av_df], ignore_index=True)
+            # Allow user to modify submitted data
+            if st.button("Modify Data"):
+                st.session_state.modify_mode = True
 
-                        # Overwrite archive.csv
-                        archive_df.to_csv("archive.csv", index=False)
+# Modify mode
+if st.session_state.get("modify_mode", False):
+    st.subheader("Modify Submitted Data")
+    modified_archive_df = st.data_editor(st.session_state.submitted_archive_df, key="archive_editor")
+    modified_av_df = st.data_editor(st.session_state.submitted_av_df, key="av_editor")
 
-                        #Clear the av_df, and overwrite av.csv
-                        av_df = av_df.iloc[0:0]
-                        av_df.to_csv("av.csv", index=False)
-
-                        st.success(f"{len(av_df)} rows archived successfully.")
-
-                    except Exception as e:
-                        st.error(f"Error archiving data: {e}")
-
-                elif review_choice == "Modify":
-                    modified_archive_df = st.data_editor(archive_df)
-                    modified_av_df = st.data_editor(av_df)
-    if st.button("Done Modifying"):
+    if st.button("Save Modifications"):
         try:
-            # Overwrite the entire csv files with the modified dataframes.
+            # Save modified data to CSV files
             modified_archive_df.to_csv("archive.csv", index=False)
             modified_av_df.to_csv("av.csv", index=False)
             st.success("Modified data saved successfully.")
+            st.session_state.modify_mode = False  # Exit modify mode
         except Exception as e:
             st.error(f"Error saving modified data: {e}")
-
-
-   
