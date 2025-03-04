@@ -238,24 +238,24 @@ if st.session_state.product_batches[selected_product]:
 
     if review_choice == "Archive":
         if st.button("Confirm Archive"):
-        try:
-            st.write(archive_df)  # added
-            st.write(av_df)  # added
-            import os  # Import the os library.
-            archive_exists = os.path.isfile("archive.csv")
-            av_exists = os.path.isfile("av.csv")
-            archive_df.to_csv("archive.csv", mode='a', index=False)
-            av_df.to_csv("av.csv", mode='a', index=False)
-            st.success("Data archived successfully.")
-        except Exception as e:
-            st.error(f"Error archiving data: {e}")
+            try:
+                st.write(archive_df)  # added
+                st.write(av_df)  # added
+                import os  # Import the os library.
+                archive_exists = os.path.isfile("archive.csv")
+                av_exists = os.path.isfile("av.csv")
+                archive_df.to_csv("archive.csv", mode='a', index=False)
+                av_df.to_csv("av.csv", mode='a', index=False)
+                st.success("Data archived successfully.")
+            except Exception as e:
+                st.error(f"Error archiving data: {e}")
             elif review_choice == "Modify":
                 modified_archive_df = st.data_editor(archive_df)
                 modified_av_df = st.data_editor(av_df)
                 if st.button("Done Modifying"):
-    try:
-        modified_archive_df.to_csv("archive.csv", mode='a', header=False, index=False)
-        modified_av_df.to_csv("av.csv", mode='a', header=False, index=False)
-        st.success("Modified data archived successfully.")
-    except Exception as e:
-        st.error(f"Error saving modified data: {e}")
+                    try:
+                        modified_archive_df.to_csv("archive.csv", mode='a', header=False, index=False)
+                        modified_av_df.to_csv("av.csv", mode='a', header=False, index=False)
+                        st.success("Modified data archived successfully.")
+                    except Exception as e:
+                        st.error(f"Error saving modified data: {e}")
