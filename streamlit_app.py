@@ -269,8 +269,8 @@ if st.session_state.product_batches[selected_product]:
                         st.session_state.submitted_av_df.to_csv(av_file_path, index=False)
         
                         st.success("Data saved successfully!")
-                except Exception as e:
-                    st.error(f"Error saving data: {e}")
+                    except Exception as e:
+                        st.error(f"Error saving data: {e}")
             with col2:
                 if st.button("Modify Data"):
                     st.session_state.modify_mode = True
