@@ -237,7 +237,7 @@ if st.session_state.product_batches[selected_product]:
             review_choice = st.radio("Review and Action", ["Archive", "Modify"])
 
     if review_choice == "Archive":
-    if st.button("Confirm Archive"):
+        if st.button("Confirm Archive"):
         try:
             st.write(archive_df)  # added
             st.write(av_df)  # added
