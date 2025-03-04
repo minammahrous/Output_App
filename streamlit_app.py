@@ -236,7 +236,7 @@ if st.session_state.product_batches[selected_product]:
             # Review and action buttons
             review_choice = st.radio("Review and Action", ["Archive", "Modify"])
             if review_choice == "Archive":
-    if st.button("Confirm Archive"):
+        if st.button("Confirm Archive"):
         try:
             st.write(archive_df)  # added
             st.write(av_df)  # added
@@ -256,9 +256,9 @@ if st.session_state.product_batches[selected_product]:
         except Exception as e:
             st.error(f"Error archiving data: {e}")
 
-elif review_choice == "Modify":
-    modified_archive_df = st.data_editor(archive_df)
-    modified_av_df = st.data_editor(av_df)
+    elif review_choice == "Modify":
+        modified_archive_df = st.data_editor(archive_df)
+        modified_av_df = st.data_editor(av_df)
     if st.button("Done Modifying"):
         try:
             # Overwrite the entire csv files with the modified dataframes.
