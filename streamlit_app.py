@@ -235,8 +235,7 @@ if st.session_state.product_batches[selected_product]:
 
             # Review and action buttons
             review_choice = st.radio("Review and Action", ["Archive", "Modify"])
-
-   if review_choice == "Archive":
+            if review_choice == "Archive":
     if st.button("Confirm Archive"):
         try:
             st.write(archive_df)  # added
@@ -268,3 +267,6 @@ elif review_choice == "Modify":
             st.success("Modified data saved successfully.")
         except Exception as e:
             st.error(f"Error saving modified data: {e}")
+
+
+   
