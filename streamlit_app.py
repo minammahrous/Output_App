@@ -236,29 +236,29 @@ if st.session_state.product_batches[selected_product]:
             # Review and action buttons
             review_choice = st.radio("Review and Action", ["Archive", "Modify"])
             if review_choice == "Archive":
-        if st.button("Confirm Archive"):
-        try:
-            st.write(archive_df)  # added
-            st.write(av_df)  # added
+                if st.button("Confirm Archive"):
+                    try:
+                        st.write(archive_df)  # added
+                        st.write(av_df)  # added
 
-            # Append av_df to archive_df
-            archive_df = pd.concat([archive_df, av_df], ignore_index=True)
+                        # Append av_df to archive_df
+                        archive_df = pd.concat([archive_df, av_df], ignore_index=True)
 
-            # Overwrite archive.csv
-            archive_df.to_csv("archive.csv", index=False)
+                        # Overwrite archive.csv
+                        archive_df.to_csv("archive.csv", index=False)
 
-            #Clear the av_df, and overwrite av.csv
-            av_df = av_df.iloc[0:0]
-            av_df.to_csv("av.csv", index=False)
+                        #Clear the av_df, and overwrite av.csv
+                        av_df = av_df.iloc[0:0]
+                        av_df.to_csv("av.csv", index=False)
 
-            st.success(f"{len(av_df)} rows archived successfully.")
+                        st.success(f"{len(av_df)} rows archived successfully.")
 
-        except Exception as e:
-            st.error(f"Error archiving data: {e}")
+                    except Exception as e:
+                        st.error(f"Error archiving data: {e}")
 
-    elif review_choice == "Modify":
-        modified_archive_df = st.data_editor(archive_df)
-        modified_av_df = st.data_editor(av_df)
+        elif review_choice == "Modify":
+            modified_archive_df = st.data_editor(archive_df)
+            modified_av_df = st.data_editor(av_df)
     if st.button("Done Modifying"):
         try:
             # Overwrite the entire csv files with the modified dataframes.
